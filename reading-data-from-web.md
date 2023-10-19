@@ -346,17 +346,17 @@ grab elements that I want
 ``` r
 title_vec = 
   swm_html %>% 
-  html_nodes(css = ".lister-item-header a") %>% 
+  html_elements(".lister-item-header a") %>% 
   html_text()
 
 gross_rev_vec = 
   swm_html %>% 
-  html_nodes(css = ".text-muted .ghost~ .text-muted+ span") %>% 
+  html_elements(".text-muted .ghost~ .text-muted+ span") %>% 
   html_text()
 
 runtime_vec = 
   swm_html %>% 
-  html_nodes(css = ".runtime") %>% 
+  html_elements(".runtime") %>% 
   html_text()
 
 swm_df = 
@@ -364,4 +364,30 @@ swm_df =
     title = title_vec,
     gross_rev = gross_rev_vec,
     runtime = runtime_vec)
+```
+
+## get some nyc water data
+
+this is coming from an API
+
+``` r
+nyc_water = 
+  GET("https://data.cityofnewyork.us/resource/ia2d-e54m.csv") %>% 
+  content("parsed")
+```
+
+    ## Rows: 44 Columns: 4
+    ## ── Column specification ────────────────────────────────────────────────────────
+    ## Delimiter: ","
+    ## dbl (4): year, new_york_city_population, nyc_consumption_million_gallons_per...
+    ## 
+    ## ℹ Use `spec()` to retrieve the full column specification for this data.
+    ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+``` r
+nyc_water2 = 
+ GET("https://data.cityofnewyork.us/resource/ia2d-e54m.json") %>% 
+  content("text") %>% 
+  jsonlite::fromJSON() %>% 
+  as_tibble()
 ```
