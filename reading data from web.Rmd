@@ -107,6 +107,16 @@ nyc_water2 =
   jsonlite::fromJSON() %>% 
   as_tibble()
 ```
+## brffs dataset 
+
+same process, different data
+
+```{r}
+brffs_2010 = 
+  GET("https://data.cdc.gov/resource/acme-vg9e.csv",
+    query = list("$limit" = 5000))%>% 
+  content("parsed")
+```
 
 
 
