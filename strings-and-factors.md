@@ -172,3 +172,56 @@ data_marj %>%
 ```
 
 <img src="strings-and-factors_files/figure-gfm/unnamed-chunk-11-1.png" width="90%" />
+
+## weather data
+
+``` r
+weather_df = 
+  rnoaa::meteo_pull_monitors(
+    c("USW00094728", "USW00022534", "USS0023B17S"),
+    var = c("PRCP", "TMIN", "TMAX"), 
+    date_min = "2021-01-01",
+    date_max = "2023-12-31") |>
+  mutate(
+    name = recode(
+      id, 
+      USW00094728 = "CentralPark_NY", 
+      USW00022534 = "Molokai_HI",
+      USS0023B17S = "Waterhole_WA"),
+    tmin = tmin / 10,
+    tmax = tmax / 10) |>
+  select(name, id, everything())
+```
+
+    ## Registered S3 method overwritten by 'hoardr':
+    ##   method           from
+    ##   print.cache_info httr
+
+    ## using cached file: /Users/nhunguyen/Library/Caches/org.R-project.R/R/rnoaa/noaa_ghcnd/USW00094728.dly
+
+    ## date created (size, mb): 2023-10-04 20:49:04 (8.527)
+
+    ## file min/max dates: 1869-01-01 / 2023-10-31
+
+    ## using cached file: /Users/nhunguyen/Library/Caches/org.R-project.R/R/rnoaa/noaa_ghcnd/USW00022534.dly
+
+    ## date created (size, mb): 2023-10-04 20:49:16 (3.832)
+
+    ## file min/max dates: 1949-10-01 / 2023-10-31
+
+    ## using cached file: /Users/nhunguyen/Library/Caches/org.R-project.R/R/rnoaa/noaa_ghcnd/USS0023B17S.dly
+
+    ## date created (size, mb): 2023-10-04 20:49:20 (0.997)
+
+    ## file min/max dates: 1999-09-01 / 2023-10-31
+
+``` r
+weather_df %>% 
+  mutate(name = fct_reorder(name, tmax)) %>% 
+  ggplot(aes(x = name, y = tmax)) +
+  geom_violin()
+```
+
+<img src="strings-and-factors_files/figure-gfm/unnamed-chunk-13-1.png" width="90%" />
+
+## 

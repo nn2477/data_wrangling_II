@@ -166,3 +166,30 @@ data_marj %>%
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 ```
 
+## weather data 
+
+```{r}
+weather_df = 
+  rnoaa::meteo_pull_monitors(
+    c("USW00094728", "USW00022534", "USS0023B17S"),
+    var = c("PRCP", "TMIN", "TMAX"), 
+    date_min = "2021-01-01",
+    date_max = "2023-12-31") |>
+  mutate(
+    name = recode(
+      id, 
+      USW00094728 = "CentralPark_NY", 
+      USW00022534 = "Molokai_HI",
+      USS0023B17S = "Waterhole_WA"),
+    tmin = tmin / 10,
+    tmax = tmax / 10) |>
+  select(name, id, everything())
+```
+```{r}
+weather_df %>% 
+  mutate(name = fct_reorder(name, tmax)) %>% 
+  ggplot(aes(x = name, y = tmax)) +
+  geom_violin()
+```
+
+## 
