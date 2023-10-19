@@ -118,6 +118,28 @@ brffs_2010 =
   content("parsed")
 ```
 
+## some data aren't so nice
+
+let's look at Pokemon
+
+```{r}
+poke = 
+  GET("http://pokeapi.co/api/v2/pokemon/1") |>
+  content()
+
+poke$name
+poke$height
+poke$abilities
+
+```
+
+## closing thoughts 
+
+  - easy to make data requests that are unreasonable when scraping data from APIs 
+  - if using a dataset ALOT, it is easier to have just 1 rmarkdown file to specify how I access and processed the data 
+    - any other analysis I do can be in a different rmarkdown file -- makes it so that I don't have to go to the internet everytime and ask for data to be brought in
+    
+    - be responsible!!! can accidentally crash a server 
 
 
 

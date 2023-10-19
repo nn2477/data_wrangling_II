@@ -412,3 +412,70 @@ brffs_2010 =
     ## 
     ## ℹ Use `spec()` to retrieve the full column specification for this data.
     ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+## some data aren’t so nice
+
+let’s look at Pokemon
+
+``` r
+poke = 
+  GET("http://pokeapi.co/api/v2/pokemon/1") |>
+  content()
+
+poke$name
+```
+
+    ## [1] "bulbasaur"
+
+``` r
+poke$height
+```
+
+    ## [1] 7
+
+``` r
+poke$abilities
+```
+
+    ## [[1]]
+    ## [[1]]$ability
+    ## [[1]]$ability$name
+    ## [1] "overgrow"
+    ## 
+    ## [[1]]$ability$url
+    ## [1] "https://pokeapi.co/api/v2/ability/65/"
+    ## 
+    ## 
+    ## [[1]]$is_hidden
+    ## [1] FALSE
+    ## 
+    ## [[1]]$slot
+    ## [1] 1
+    ## 
+    ## 
+    ## [[2]]
+    ## [[2]]$ability
+    ## [[2]]$ability$name
+    ## [1] "chlorophyll"
+    ## 
+    ## [[2]]$ability$url
+    ## [1] "https://pokeapi.co/api/v2/ability/34/"
+    ## 
+    ## 
+    ## [[2]]$is_hidden
+    ## [1] TRUE
+    ## 
+    ## [[2]]$slot
+    ## [1] 3
+
+## closing thoughts
+
+- easy to make data requests that are unreasonable when scraping data
+  from APIs
+- if using a dataset ALOT, it is easier to have just 1 rmarkdown file to
+  specify how I access and processed the data
+  - any other analysis I do can be in a different rmarkdown file – makes
+    it so that I don’t have to go to the internet everytime and ask for
+    data to be brought in
+
+  - be responsible!!! can accidentally crash a server
