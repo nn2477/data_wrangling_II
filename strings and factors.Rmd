@@ -1,0 +1,130 @@
+---
+title: "strings and factors"
+author: "Nhu Nguyen"
+date: "2023-10-18"
+output: github_document
+---
+```{r setup, include=FALSE}
+library(tidyverse)
+
+library(rvest)
+library(p8105.datasets)
+
+knitr::opts_chunk$set(
+	echo = TRUE,
+	warning = FALSE,
+	fig.width = 8, 
+  fig.height = 6,
+  out.width = "90%"
+)
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+```
+
+## strings and regex
+  - str_detect: helps me detect if a certain word (or whatever is in the quotation mark) in the string 
+       - does this pattern appear anywhere in this string of characters? 
+  - uppercase and lowercase are considered different values
+  - str_replace: allows you to replace/make changes in your string 
+
+```{r}
+string_vec = c("my", "name", "is", "jeff")
+
+str_detect(string_vec, "jeff")
+
+str_replace(string_vec, "jeff", "Jeff")
+```
+
+  - "^" means beginning of the line 
+  - close with $ if you want it to be at the end 
+```{r}
+string_vec = c(
+  "i think we all rule for participating",
+  "i think i have been caught",
+  "i think this will be quite fun actually",
+  "it will be fun, i think"
+  )
+
+str_detect(string_vec, "^i think")
+```
+
+
+
+```{r}
+string_vec = c(
+  "Time for a Pumpkin Spice Latte!",
+  "went to the #pumpkinpatch last weekend",
+  "Pumpkin Pie is obviously the best pie",
+  "SMASHING PUMPKINS -- LIVE IN CONCERT!!"
+  )
+
+str_detect(string_vec, "[Pp]umpkin")
+```
+
+
+```{r}
+string_vec = c(
+  '7th inning stretch',
+  '1st half soon to begin. Texas won the toss.',
+  'she is 5 feet 4 inches tall',
+  '3AM - cant sleep :('
+  )
+
+str_detect(string_vec, "^[0-9][a-zA-z]")
+```
+
+the character `.` matches anything 
+
+```{r}
+string_vec = c(
+  'Its 7:11 in the evening',
+  'want to go to 7-11?',
+  'my flight is AA711',
+  'NetBios: scanning ip 203.167.114.66'
+  )
+
+str_detect(string_vec, "7.11")
+```
+
+```{r}
+string_vec = c(
+  'The CI is [2, 5]',
+  ':-]',
+  ':-[',
+  'I found the answer on pages [6-7]'
+  )
+
+str_detect(string_vec, "\\[")
+```
+
+## factors 
+
+```{r}
+vec_sex = factor (c("male", "male", "female", "female"))
+
+vec_sex
+
+as.numeric(vec_sex)
+```
+
+what happens if I relevel....
+
+```{r}
+vec_sex = fct_relevel(vec_sex, "male")
+
+vec_sex
+
+as.numeric(vec_sex)
+```
+
+## NSDUH 
+
+
