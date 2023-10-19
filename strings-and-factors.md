@@ -219,9 +219,179 @@ weather_df =
 weather_df %>% 
   mutate(name = fct_reorder(name, tmax)) %>% 
   ggplot(aes(x = name, y = tmax)) +
-  geom_violin()
+  geom_violin(aes(fill = name), color = "blue", alpha = .5) +
+  theme(legend.position = "bottom")
 ```
 
 <img src="strings-and-factors_files/figure-gfm/unnamed-chunk-13-1.png" width="90%" />
 
-## 
+``` r
+weather_df %>% 
+  mutate(name = fct_reorder(name, tmax)) %>% 
+  lm(tmax ~ name, data = .)
+```
+
+    ## 
+    ## Call:
+    ## lm(formula = tmax ~ name, data = .)
+    ## 
+    ## Coefficients:
+    ##        (Intercept)  nameCentralPark_NY      nameMolokai_HI  
+    ##              7.737              10.525              20.650
+
+``` r
+weather_df |>
+  mutate(name = forcats::fct_relevel(name, c("Molokai_HI", "CentralPark_NY", "Waterhole_WA"))) |>
+  lm(tmax ~ name, data = _)
+```
+
+    ## 
+    ## Call:
+    ## lm(formula = tmax ~ name, data = mutate(weather_df, name = forcats::fct_relevel(name, 
+    ##     c("Molokai_HI", "CentralPark_NY", "Waterhole_WA"))))
+    ## 
+    ## Coefficients:
+    ##        (Intercept)  nameCentralPark_NY    nameWaterhole_WA  
+    ##              28.39              -10.12              -20.65
+
+## restaurant inspections data
+
+``` r
+data("rest_inspec")
+
+rest_inspec %>% 
+  group_by(boro, grade) %>% 
+  summarise(n = n()) %>% 
+  pivot_wider(
+    names_from = grade,
+    values_from = n)
+```
+
+    ## `summarise()` has grouped output by 'boro'. You can override using the
+    ## `.groups` argument.
+
+    ## # A tibble: 6 × 8
+    ## # Groups:   boro [6]
+    ##   boro              A     B     C `Not Yet Graded`     P     Z  `NA`
+    ##   <chr>         <int> <int> <int>            <int> <int> <int> <int>
+    ## 1 BRONX         13688  2801   701              200   163   351 16833
+    ## 2 BROOKLYN      37449  6651  1684              702   416   977 51930
+    ## 3 MANHATTAN     61608 10532  2689              765   508  1237 80615
+    ## 4 Missing           4    NA    NA               NA    NA    NA    13
+    ## 5 QUEENS        35952  6492  1593              604   331   913 45816
+    ## 6 STATEN ISLAND  5215   933   207               85    47   149  6730
+
+removing inspection scores other than `A`, `B`, or `C`, and also
+removing restaurants with missing boro information & cleaning boro names
+
+``` r
+rest_inspec =
+  rest_inspec %>% 
+  filter(grade %in% c("A", "B", "C"), boro != "Missing") %>% 
+  mutate(boro = str_to_title(boro))
+```
+
+focusing only on pizza places for now and re-examine grades by borough
+
+``` r
+rest_inspec %>% 
+  filter(str_detect(dba, "Pizza")) %>% 
+  group_by(boro, grade) %>% 
+  summarise(n = n()) %>% 
+  pivot_wider(
+    names_from = grade,
+    values_from = n
+  )
+```
+
+    ## `summarise()` has grouped output by 'boro'. You can override using the
+    ## `.groups` argument.
+
+    ## # A tibble: 5 × 3
+    ## # Groups:   boro [5]
+    ##   boro              A     B
+    ##   <chr>         <int> <int>
+    ## 1 Bronx             9     3
+    ## 2 Brooklyn          6    NA
+    ## 3 Manhattan        26     8
+    ## 4 Queens           17    NA
+    ## 5 Staten Island     5    NA
+
+\*\* doesn’t look right since we know there’s more pizza place ratings
+that that – problem is that `str_detach` is case-sensitive
+
+``` r
+rest_inspec %>% 
+  filter(str_detect(dba, "[Pp][Ii][Zz][Zz][Aa]")) %>% 
+  group_by(boro, grade) %>% 
+  summarise(n = n()) %>% 
+  pivot_wider(
+    names_from = grade,
+    values_from = n
+  )
+```
+
+    ## `summarise()` has grouped output by 'boro'. You can override using the
+    ## `.groups` argument.
+
+    ## # A tibble: 5 × 4
+    ## # Groups:   boro [5]
+    ##   boro              A     B     C
+    ##   <chr>         <int> <int> <int>
+    ## 1 Bronx          1170   305    56
+    ## 2 Brooklyn       1948   296    61
+    ## 3 Manhattan      1983   420    76
+    ## 4 Queens         1647   259    48
+    ## 5 Staten Island   323   127    21
+
+visualize data
+
+``` r
+rest_inspec %>% 
+  filter(str_detect(dba, "[Pp][Ii][Zz][Zz][Aa]")) %>% 
+  ggplot(aes(x = boro, fill = grade)) + 
+  geom_bar()
+```
+
+<img src="strings-and-factors_files/figure-gfm/unnamed-chunk-20-1.png" width="90%" />
+reordering things based off number of pizza places??
+
+``` r
+rest_inspec %>% 
+  filter(str_detect(dba, "[Pp][Ii][Zz][Zz][Aa]")) %>% 
+  mutate(boro = fct_infreq(boro)) %>% 
+  ggplot(aes(x = boro, fill = grade)) +
+  geom_bar()
+```
+
+<img src="strings-and-factors_files/figure-gfm/unnamed-chunk-21-1.png" width="90%" />
+if i want to rename a borough, i can try using `str_replace`
+
+``` r
+rest_inspec %>% 
+  filter(str_detect(dba, "[Pp][Ii][Zz][Zz][Aa]")) %>% 
+  mutate(boro = fct_infreq(boro),
+         boro = str_replace(boro, "Manhattan", "The City")) %>% 
+  ggplot(aes(x = boro, fill = grade)) +
+  geom_bar()
+```
+
+<img src="strings-and-factors_files/figure-gfm/unnamed-chunk-22-1.png" width="90%" />
+\*\* this renamed the borough but converted the results back to a
+string, which when plotted, was implicitly made a factor and ordered
+alphabetically - using `replace` function wouldn’t fix this issue at all
+either since factors have very specific values – trying to use a value
+that is not an existing factor level won’t work
+
+the `fct_recode` function is specifically used to rename factor levels:
+
+``` r
+rest_inspec %>% 
+  filter(str_detect(dba, "[Pp][Ii][Zz][Zz][Aa]")) %>% 
+  mutate(boro = fct_infreq(boro),
+         boro = fct_recode(boro, "The City" = "Manhattan")) %>% 
+  ggplot(aes(x = boro, fill = grade)) +
+  geom_bar()
+```
+
+<img src="strings-and-factors_files/figure-gfm/unnamed-chunk-23-1.png" width="90%" />
